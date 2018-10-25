@@ -1,74 +1,73 @@
-function cout ($in_ss)
-{
-	Write-Host($in_ss) -nonewline -foregroundcolor White -Separator ""
+function prompt {
+	TrenchPrompt
 }
 
-function prompt
-{
-	Write-Host("PS " + $(pwd)[0].Path + " ") -nonewline -foregroundcolor White
-	$gStatus = $(git status -sb 2> $null)
-	if (($gStatus | measure).Count -eq 1) { $gStatus = @($gStatus) }
-	if ($gStatus -ne $null)
-	{
-
-		$files = $gStatus[1..($gStatus.Length-1)]
-	# M odified
-    # A dded
-    # D eleted
-    # R enamed
-	# C opied
-	# U pdated
-		$unTrackedMod = ($files | Where-Object {$_[1] -eq 'M'}).Count # *
-		$unTrackedDel = ($files | Where-Object {$_[1] -eq 'D'}).Count # -
-		$unTrackedUnk = ($files | Where-Object {$_[1] -eq '?'}).Count # +
-
-
-		$TrackedMod = ($files | Where-Object {$_[0] -eq 'M'}).Count # *
-		$TrackedAdd = ($files | Where-Object {$_[0] -eq 'A'}).Count # ↑
-		$TrackedDel = ($files | Where-Object {$_[0] -eq 'D'}).Count # ↓
-		$TrackedRen = ($files | Where-Object {$_[0] -eq 'R'}).Count # →
-		$TrackedCop = ($files | Where-Object {$_[0] -eq 'C'}).Count # ↕
-		$TrackedUpd = ($files | Where-Object {$_[0] -eq 'U'}).Count # *
-
-
-
-		if ($unTrackedMod -gt 0) {cout($unTrackedMod.ToString() + '*') }
-		if ($unTrackedDel -gt 0) {cout($unTrackedDel.ToString() + '-') }
-		if ($unTrackedUnk -gt 0) {cout($unTrackedUnk.ToString() + '+') }
-		if ($TrackedMod -gt 0) { cout($TrackedMod.ToString() + '#') }
-		if ($TrackedAdd -gt 0) { cout($TrackedAdd.ToString() + '^') }
-		if ($TrackedDel -gt 0) { cout($TrackedDel.ToString() + 'x') }
-		if ($TrackedRen -gt 0) { cout($TrackedRen.ToString() + '>') }
-		if ($TrackedCop -gt 0) { cout($TrackedCop.ToString() + '=') }
-		if ($TrackedUpd -gt 0) { cout($TrackedUpd.ToString() + '#') }
-
-		$branch = $gStatus[0] -replace "## ([^.]+).*", '$1'
-		cout($branch)
-
-
-
-		## master...origin/master [ahead 1, behind 8]
-		if ($gStatus[0] -match "\[.*ahead ([0-9]+).*\]")
-		{
-			if ($Matches[1] -ne $null)
-			{
-				cout(">" + $Matches[1])
-			}
-		}
-		if ($gStatus[0] -match "\[.*behind ([0-9]+).*\]")
-		{
-			if ($Matches[1] -ne $null)
-			{
-				cout("<" + $Matches[1])
-			}
-		}
-
-		cout(" ")
-	}
-	cout("$")
-
-    return " "
-}
+#function prompt
+#{
+#	Write-Host("PS " + $(pwd)[0].Path + " ") -nonewline -foregroundcolor White
+#	$gStatus = $(git status -sb 2> $null)
+#	if (($gStatus | measure).Count -eq 1) { $gStatus = @($gStatus) }
+#	if ($gStatus -ne $null)
+#	{
+#
+#		$files = $gStatus[1..($gStatus.Length-1)]
+#	# M odified
+#    # A dded
+#    # D eleted
+#    # R enamed
+#	# C opied
+#	# U pdated
+#		$unTrackedMod = ($files | Where-Object {$_[1] -eq 'M'}).Count # *
+#		$unTrackedDel = ($files | Where-Object {$_[1] -eq 'D'}).Count # -
+#		$unTrackedUnk = ($files | Where-Object {$_[1] -eq '?'}).Count # +
+#
+#
+#		$TrackedMod = ($files | Where-Object {$_[0] -eq 'M'}).Count # *
+#		$TrackedAdd = ($files | Where-Object {$_[0] -eq 'A'}).Count # ↑
+#		$TrackedDel = ($files | Where-Object {$_[0] -eq 'D'}).Count # ↓
+#		$TrackedRen = ($files | Where-Object {$_[0] -eq 'R'}).Count # →
+#		$TrackedCop = ($files | Where-Object {$_[0] -eq 'C'}).Count # ↕
+#		$TrackedUpd = ($files | Where-Object {$_[0] -eq 'U'}).Count # *
+#
+#
+#
+#		if ($unTrackedMod -gt 0) {cout($unTrackedMod.ToString() + '*') }
+#		if ($unTrackedDel -gt 0) {cout($unTrackedDel.ToString() + '-') }
+#		if ($unTrackedUnk -gt 0) {cout($unTrackedUnk.ToString() + '+') }
+#		if ($TrackedMod -gt 0) { cout($TrackedMod.ToString() + '#') }
+#		if ($TrackedAdd -gt 0) { cout($TrackedAdd.ToString() + '^') }
+#		if ($TrackedDel -gt 0) { cout($TrackedDel.ToString() + 'x') }
+#		if ($TrackedRen -gt 0) { cout($TrackedRen.ToString() + '>') }
+#		if ($TrackedCop -gt 0) { cout($TrackedCop.ToString() + '=') }
+#		if ($TrackedUpd -gt 0) { cout($TrackedUpd.ToString() + '#') }
+#
+#		$branch = $gStatus[0] -replace "## ([^.]+).*", '$1'
+#		cout($branch)
+#
+#
+#
+#		## master...origin/master [ahead 1, behind 8]
+#		if ($gStatus[0] -match "\[.*ahead ([0-9]+).*\]")
+#		{
+#			if ($Matches[1] -ne $null)
+#			{
+#				cout(">" + $Matches[1])
+#			}
+#		}
+#		if ($gStatus[0] -match "\[.*behind ([0-9]+).*\]")
+#		{
+#			if ($Matches[1] -ne $null)
+#			{
+#				cout("<" + $Matches[1])
+#			}
+#		}
+#
+#		cout(" ")
+#	}
+#	cout("$")
+#
+#    return " "
+#}
 
 $profileDir = (Get-ChildItem $PROFILE)[0].Directory.FullName + "\"
 
@@ -79,8 +78,8 @@ $profileDir = (Get-ChildItem $PROFILE)[0].Directory.FullName + "\"
 # SIG # Begin signature block
 # MIIMpAYJKoZIhvcNAQcCoIIMlTCCDJECAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUlERru6rNma4rr06rXrQ952uS
-# sJOgggfmMIIDRTCCAjGgAwIBAgIQQ2iLvgg9Z7lH80CpfuU/HzAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU5EywrGCQJDW+z2LxwJw/QxDT
+# aSigggfmMIIDRTCCAjGgAwIBAgIQQ2iLvgg9Z7lH80CpfuU/HzAJBgUrDgMCHQUA
 # MCwxKjAoBgNVBAMTIVBvd2Vyc2hlbGwgTG9jYWwgQ2VydGlmaWNhdGUgUm9vdDAe
 # Fw0xODA4MDYxNDAyMDZaFw0zOTEyMzEyMzU5NTlaMCExHzAdBgNVBAMTFmJhcm5v
 # bGQgUG93ZXJzaGVsbCBDU0MwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
@@ -126,23 +125,23 @@ $profileDir = (Get-ChildItem $PROFILE)[0].Directory.FullName + "\"
 # IExvY2FsIENlcnRpZmljYXRlIFJvb3QCEENoi74IPWe5R/NAqX7lPx8wCQYFKw4D
 # AhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcNAQkDMQwG
 # CisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZI
-# hvcNAQkEMRYEFAp4cwYLAbAn/x0dv7cUP7IZ5LBcMA0GCSqGSIb3DQEBAQUABIIB
-# AAayQ70eT9qJiJLbbY08fIJTPQyYPvQphDdxzyWDnecG5uLJO3qtWu/vOS28HEIW
-# mrYUE/yHMMWy+b/4sOI1OTgX1jLK0zsIfY4OEQYn1rTRjsyA/7wAqFMGHaYSl9CO
-# pWEr6nU0iihRrvrjdtlQn3NLCuZsNT6RurS1RKrD4DcE+Ger+uKyKdLCoP0GZhFF
-# ucQ9aEF7QE/Jj+1Tj/akWAobrPd/gjtagE5Lasr5mnE8XdSwJuZhOjA4xNI2/wr3
-# DkpmocoKL7dcxQ00JhmybfjETXYaSoVteeW/tv0GwvzQvkr7IQWjSwSbdgiocL6y
-# 8YvhyVvKN+RzJyOcDkZYwXahggJDMIICPwYJKoZIhvcNAQkGMYICMDCCAiwCAQEw
+# hvcNAQkEMRYEFAjuDM/SW4swTqHY1Jy4DtntY1xrMA0GCSqGSIb3DQEBAQUABIIB
+# AMde+J8gmQLvsS83Qz4Yl6fZdBgGSB29lTxP5huM0Pk5nJcCUsoOLwB7/0Y6CEo8
+# +RqXZN+2zTQ94pnhwxtTD/4/opNc5X8OphKgRI2mckviGnAXYYm+fC52TLTd06+C
+# k1SO8nBebm1AEXK4Y3Qky/ol7GiZwomuvYq3Tosyjm8XUhhz8aUybFFJF5ffVd/w
+# xvPgb2WSObmtDhlm8AjJvRosAtk4vUYh0LKvfAITyD877O3f9mr6WHMywn2cDmhK
+# FhP9Zdty9wjQfBKPLWf7kPChbtWiUJkyJRprOPuAtASRGrJXFmAEIN5MFUjPHwf3
+# d91OiwoE/6sBEuykqEkhuGqhggJDMIICPwYJKoZIhvcNAQkGMYICMDCCAiwCAQEw
 # gakwgZUxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJVVDEXMBUGA1UEBxMOU2FsdCBM
 # YWtlIENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEhMB8GA1UE
 # CxMYaHR0cDovL3d3dy51c2VydHJ1c3QuY29tMR0wGwYDVQQDExRVVE4tVVNFUkZp
 # cnN0LU9iamVjdAIPFojwOSVeY45pFDkH5jMLMAkGBSsOAwIaBQCgXTAYBgkqhkiG
-# 9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0xODEwMjQxNzI3MzRa
-# MCMGCSqGSIb3DQEJBDEWBBSkB4CGprW1N3v/SyNKdxTga61PgzANBgkqhkiG9w0B
-# AQEFAASCAQDhoYU4msQl+QjSf2yuyX76Q4pPlJhpR2efflAU+u9PNDWOUx2/EThT
-# jS3FGxVHzCNBnQXtY9AiTNAsnvyWTQbfPQhtJtivkExTfKn6iDfrb3SkBjs+Gh44
-# +2Z3xAif+AN33S4EADNowczJqXdpEyQmobZrzcdG/i0mnptxwtLlzyaYR7/XzK7p
-# frRZ40wK6vUek9/BMuimXhfxwK509Wagub4uXJbRLY72FZnTqCkeUne1kls6E3ei
-# j0DcnDDgFl9+gFnPRqHphEleYtKFp/5bO4siKYv0Dtwh1+2Lsx1fY87cVaDQBxi3
-# pI6wpTKIqmDKImUAUNwZQYUSQMCJg4mc
+# 9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0xODEwMjUxNDAyMTJa
+# MCMGCSqGSIb3DQEJBDEWBBQswJ/D61QezyQvkNGZ6Rx+Qbt5GzANBgkqhkiG9w0B
+# AQEFAASCAQCZ56IPje7eJFa0X3jiIove5URjpC0bo08hoLC+VHXH/LRABub+2rWo
+# kNqj20QLdhdCR0eGkQr4VdxScjhXLGEaJ0cgEtQwC58ChFhSo30M/UkF8O8B0/pk
+# Ni07IkeyGo8gWQyHRrjLRR7jq+MpZcgEuTx2sAZMbvOM779H+APPLnlpcRwuygYX
+# uQt+0ZMb4xXVtDmvJSwymgJ6YrF7kTtFJdxDn8C/yafe4ckYpWxSA+fmyOzHe4NE
+# HsxUrXTEhYjPU9cvhd9At6zzsGkG1T4Za0nbOFL4KPH3AHAFRYyqnZ/L016Kwequ
+# yV6Hhg8y0TjotbGLhe1cJd/AqP0qXkll
 # SIG # End signature block
