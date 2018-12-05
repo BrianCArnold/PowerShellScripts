@@ -1,10 +1,11 @@
-$cert = New-SelfSignedCertificate -DnsName 'trenchie@trenchie.us' -CertStoreLocation Cert:\CurrentUser\My\ -Type Codesigning
+$cert = New-SelfSignedCertificate -DnsName 'trenchie@trenchie.us' -CertStoreLocation Cert:\LocalMachine\My\ -Type Codesigning
 Export-Certificate -Cert $cert -FilePath signing.cer
-Import-Certificate -FilePath .\signing.cer -CertStoreLocation Cert:\CurrentUser\Root
+Import-Certificate -FilePath .\signing.cer -CertStoreLocation Cert:\LocalMachine\Root
+Import-Certificate -FilePath .\signing.cer -CertStoreLocation Cert:\LocalMachine\TrustedPublisher\
 
 
 function SignScript {                                                                                    
-        $barnoldCert = (dir cert:currentuser\my\ -CodeSigningCert -DnsName "trenchie@trenchie.us")[0]                                     
+        $barnoldCert = (dir cert:LocalMachine\My\ -CodeSigningCert -DnsName "trenchie@trenchie.us")[0]                                     
         foreach ($arg in ($args + $input)) {                                                                                                  
                 $startFolder = Get-Location                                                                                                   
                 Write-Host("Signing ") -NoNewline                                                                                             
@@ -28,31 +29,35 @@ function SignScript {
                         }                                                                                                                     
                 }                                                                                                                             
         }                                                                                                                                     
-}                                                                                                                                             
+}     
+Set-ExecutionPolicy AllSigned -Scope LocalMachine    
 
-SignScript .
+ls -R | where {!$_.Name.StartsWith('.') -And !$_.Name.EndsWith('.cer') -And !$_.Name.EndsWith('.bat')} | Copy-Item -Destination (ls $PROFILE).Directory -Force
+
+SignScript (ls $PROFILE).Directory
+
 # SIG # Begin signature block
 # MIIMgQYJKoZIhvcNAQcCoIIMcjCCDG4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUN1O1YtQ/K9ANFT8R75hp4B8W
-# 4gugggfQMIIDLzCCAhegAwIBAgIQE+WWiHsXloFFkHYl/qa6AzANBgkqhkiG9w0B
-# AQsFADAfMR0wGwYDVQQDDBR0cmVuY2hpZUB0cmVuY2hpZS51czAeFw0xODEyMDUx
-# OTU0MDhaFw0xOTEyMDUyMDE0MDhaMB8xHTAbBgNVBAMMFHRyZW5jaGllQHRyZW5j
-# aGllLnVzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAymFyQXs8mLFz
-# 4M8ZcAAI/7IAjJC0wvDaQ00/4Ih3b+8nwNUuOCrxhL6gyz/f1rsfeAFkHtLUJBYM
-# VPmuXau13xqqJ4CFPPTWS5CJSUwgh3Ii99DL4IJf42sRBtEl028216M0LMehF3PY
-# rNXa0VTR72HTOCN8R5+f9HcICtF66LQF+zRhJsl0JcHbTv6UyL55qOqGP6wHJQIs
-# 8VRMj861LLXQTQet/KVadpsz2c4LKxMRw2Fi588sUJFX+XZEkpEkskgZ7VhyOLSK
-# szYg4jlzF2bbQPYEsx59BgT85jASPYYBULrJeH2aIQJyPOn1XGSYsIG7u97R1n5t
-# xaDQc35IsQIDAQABo2cwZTAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUiix15WrAkLnz7WkOt8z+KuHm
+# QjagggfQMIIDLzCCAhegAwIBAgIQQqHHSQcmD7dJoeQLDkbcjjANBgkqhkiG9w0B
+# AQsFADAfMR0wGwYDVQQDDBR0cmVuY2hpZUB0cmVuY2hpZS51czAeFw0xODEyMDUy
+# MDAyMzRaFw0xOTEyMDUyMDIyMzRaMB8xHTAbBgNVBAMMFHRyZW5jaGllQHRyZW5j
+# aGllLnVzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvKfBB1ie7It0
+# 6ZD5jsNEXvpNqsE31IxNvpi+1P56yX8sRFQ7sf1pdyK/Q5fIbbBNY71Ul6HSHoW8
+# At8y8hMXBXgP6dHQYASm4rTuKYH5U3qRrI1wmZXvLEPFuWPcjVMARIQa+n0PY5aX
+# sd93pHv2/ntK/IxS0lz5cDFSqgaxad7yXnQmab/mvDa+hARSWIsZ6E6hr+pEhpBt
+# /4ow0i/hH5Cg6iyvwW93aOvXmgHbgPKJZGHP+nW9+0zTDmN8lkkowldhTrntIEae
+# DDL7ZYG593RoDO9tfL6+6B+Sq475fuZz8MPbzJC5PsHeUMmgp3T0F+0lTkhLHxcc
+# aOHSJCsIiQIDAQABo2cwZTAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYB
 # BQUHAwMwHwYDVR0RBBgwFoIUdHJlbmNoaWVAdHJlbmNoaWUudXMwHQYDVR0OBBYE
-# FGcP919A+DvTHfpH9p1WOxiNMJVtMA0GCSqGSIb3DQEBCwUAA4IBAQAph3ISDeCZ
-# JzQ7nPH6h4ellLSM0TMJoaw0C2ccua+Ox6DnsfL2JKHFbOtCEh6x8WWtiK10zgMR
-# PRW9i22seYdGGi4Oov2Rr54b6PsLcnmCecXlyxVJnSruGUe/qFVtpAOhMpDy5dGL
-# 7C8Q7rxf3cY3p3UPtFzUmHjmbwwZzOCLY4KOAo8O5CshfNMhIqAw/aoGQmI7VpO1
-# pNEawq2uaijjMB44wYVWV3Dr6hR9oKPwQFAhMiok6+MZIzWLhrNTtmsP+Vyx5qxB
-# ICxu5cfVgYjWdKmiMNzgF+Kx+CYZzcxdPqJariOS+T54a8c+6IYfMZ9BiUL0INui
-# 0Gz2LeIhWJVfMIIEmTCCA4GgAwIBAgIPFojwOSVeY45pFDkH5jMLMA0GCSqGSIb3
+# FIe8AJu9r9jv3cTdK6p0Xtxx+oqxMA0GCSqGSIb3DQEBCwUAA4IBAQBzz69Xhi05
+# 7F8m/mPFPzwq5Yut1qs5jWWw81nnmZ+UXhCiLtdxB6ynLbmoQQDnEfrrQw22+52x
+# yLwL2iPXDs190zkUHCn6AH6CPvakJkgpEeeLSPtUhEcoKfgPVGGtnUT31pjO/6Ia
+# q6qzuqlmgaN8dgOyxG6VfJqWOary+K1t2bZ/ym5U3LNnU7tMyamafpvcwOK6VRhK
+# Go7cERjLmxcI8MHRVLy7/9/hT/rJQlQLRvqzfnNwlwsN+pQUbZEHhQoQsg1gUWKB
+# oB+UysPoHmvs1CyakMleoD16f4y4vP9c71U8LYdi7t2Ctj7izRFi6XOSwR7Xqa9i
+# QhJ4erLnNftyMIIEmTCCA4GgAwIBAgIPFojwOSVeY45pFDkH5jMLMA0GCSqGSIb3
 # DQEBBQUAMIGVMQswCQYDVQQGEwJVUzELMAkGA1UECBMCVVQxFzAVBgNVBAcTDlNh
 # bHQgTGFrZSBDaXR5MR4wHAYDVQQKExVUaGUgVVNFUlRSVVNUIE5ldHdvcmsxITAf
 # BgNVBAsTGGh0dHA6Ly93d3cudXNlcnRydXN0LmNvbTEdMBsGA1UEAxMUVVROLVVT
@@ -77,26 +82,26 @@ SignScript .
 # CojrQOUGMAu4Fkvc77xVCf/GPhIudrPczkLv+XZX4bcKBUCYWJpdcRaTcYxlgepv
 # 84n3+3OttOe/2Y5vqgtPJfO44dXddZhogfiqwNGAwsTEOYnB9smebNd0+dmX+E/C
 # mgrNXo/4GengpZ/E8JIh5i15Jcki+cPwOoRXrToW9GOUEB1d0MYxggQbMIIEFwIB
-# ATAzMB8xHTAbBgNVBAMMFHRyZW5jaGllQHRyZW5jaGllLnVzAhAT5ZaIexeWgUWQ
-# diX+proDMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkG
+# ATAzMB8xHTAbBgNVBAMMFHRyZW5jaGllQHRyZW5jaGllLnVzAhBCocdJByYPt0mh
+# 5AsORtyOMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkG
 # CSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEE
-# AYI3AgEVMCMGCSqGSIb3DQEJBDEWBBS8zJR5vUCuuG/yHLt5Is0Mi31PyDANBgkq
-# hkiG9w0BAQEFAASCAQAXPlKtXWpdvgtbIrpupLCGUV1PVJBRFKCrdd0/ihIZ/cHl
-# mI2sHXOaSCvwZZkkhgIKoYIHZbICf9lo3Yz/nCI9JGq+zDO+O42AHbJiCvz4DcM3
-# G1gSzLC+Ff4w22rW1PNJ/5nNx18QDhrO7o+1RBCmNyliGfnbxTIRWYo5dIRgDO8M
-# TblaKPw7A92/vzEe9XYKTn4Tv8IZEPtBRsmUK2+WAiycU2chi1rBdJpVwRdggqPC
-# AhzZnXHMyKED6EE+FmbvKIZXGocxYWj3U8O2tHOiu1YKNJmcQd0oyuOekGbiNw20
-# nzrh1zRowCEQGbZ3wPiaPNNnjMnSZ/HC3fm2w4TOoYICQzCCAj8GCSqGSIb3DQEJ
+# AYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQ+EvGAbyLaZKarhGjYaRWty4IzwjANBgkq
+# hkiG9w0BAQEFAASCAQA7/OrdwCE8lwV/dON4NzemJb7cyBcvuNf5thTgS4c2xwJZ
+# 4F1ZER51/bmGNdIHrp1FOMUTw6FuzQqFITNS4i+ylk7EEKF3Oite/CUu5S7Nys8T
+# qCYm59CVSm6xO1VbEcO2qDAe1wKuxail+nlvWIrbHCJfLav0KOhKPNpO5rKVdeyn
+# 5wjov0Hkq8r58m4a2lAooH2SA+DurYSBH0UeDdm/dMAlIHTZCwLWGHugwWJt5U76
+# 6AgUocjU9cKLLT54nlwVERyB0DG5LjHX3R3ba8goXHFPvLdaDPI8JgaOTIMNnDQA
+# P7a5Eht9M289fggJCXQ+uUrdEvLBK8zWsfvVPCOToYICQzCCAj8GCSqGSIb3DQEJ
 # BjGCAjAwggIsAgEBMIGpMIGVMQswCQYDVQQGEwJVUzELMAkGA1UECBMCVVQxFzAV
 # BgNVBAcTDlNhbHQgTGFrZSBDaXR5MR4wHAYDVQQKExVUaGUgVVNFUlRSVVNUIE5l
 # dHdvcmsxITAfBgNVBAsTGGh0dHA6Ly93d3cudXNlcnRydXN0LmNvbTEdMBsGA1UE
 # AxMUVVROLVVTRVJGaXJzdC1PYmplY3QCDxaI8DklXmOOaRQ5B+YzCzAJBgUrDgMC
 # GgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcN
-# MTgxMjA1MjAwNDExWjAjBgkqhkiG9w0BCQQxFgQUC6N/75yOt0dmlJGO0ARlc9p+
-# 5RcwDQYJKoZIhvcNAQEBBQAEggEAQ4mJCMFA7CrgQKtjrEUfC+Pu1Z9IMzUWjMA4
-# dz8G0AYOVw7alIEe3prsfFpACDhgoPlXu1t3ZjrKmNPNzwvoqXa789/BIkMJcQpT
-# UUTZiPwxtF0HZaauqqYPAzXXzBX5DsR2TZeUC5XL/c1iExKdN1xnepAbCEBXhk80
-# /kkmHfyyiJevxfoVOguaY86nIDjPVHke9EgMMzy2AU123R/prFr4b0BTliS/4wSp
-# +KEAKYsi/5+UTm+Jm4+nJVTEkJu7nZWNixvrr34RIEQRgDiHPSYgukce+fw0lI3C
-# d2JcEON+po2HIz7Cn9maE03YHWFeQxoF1vhnMds5mjwlpP3H4w==
+# MTgxMjA1MjAxMjM3WjAjBgkqhkiG9w0BCQQxFgQUxZsrJjYcj08wsUbro9unNiCF
+# uyEwDQYJKoZIhvcNAQEBBQAEggEAQhN6QxJ61b/6M2Ft345AWqwIGXU4NtRnQmh4
+# QTVQY/hN8E/qP2WWbPmVTc+SghSXG5RrBzRD+F1nYpEQQKEr4METznwqZzE7VsJK
+# VqpoySnsTDnrrb4Sd/0eseFTt3Zv5PGh8KlmDDaeGEIwykkO2jGoGmZUaIThB/WI
+# EMG8SxTSb3THM3+Z78Q4vEI81C2pcKcAs6uflYse7j0wF2mCMbJYFzXR2+l1xxjD
+# Qcm11EvewHYDAQSLMGBN7A4NoKgH08L31EAmpndDfINo25r3Qee49pt8MsinwFqC
+# CdFana4UozpIrENwfXP6XphSPtQbPmJ23BIitytYPqmYP5JUrQ==
 # SIG # End signature block
