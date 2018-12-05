@@ -4,4 +4,5 @@ if (((ls Cert:\LocalMachine\My | where { $_.Subject -eq "CN=trenchie@trenchie.us
         Export-Certificate -Cert $cert -FilePath signing.cer
         Import-Certificate -FilePath .\signing.cer -CertStoreLocation Cert:\LocalMachine\Root
         Import-Certificate -FilePath .\signing.cer -CertStoreLocation Cert:\LocalMachine\TrustedPublisher\
+        Remove-Item .\signing.cer
 }
