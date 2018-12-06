@@ -3,7 +3,7 @@ function cout ($in_ss)
 	Write-Host($in_ss) -nonewline -foregroundcolor White -Separator ""
 }
 function TrenchPrompt {
-	Write-Host("PS " + $(pwd)[0].Path + " ") -nonewline -foregroundcolor White
+	Write-Host("PS" + ($PSVersionTable.PSVersion).Major.ToString() + " " + $(pwd)[0].Path + " ") -nonewline -foregroundcolor White
 	$gStatus = $(git status -sb 2> $null)
 	if (($gStatus | measure).Count -eq 1) { $gStatus = @($gStatus) }
 	if ($gStatus -ne $null) {
