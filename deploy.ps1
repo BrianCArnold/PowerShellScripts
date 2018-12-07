@@ -3,9 +3,9 @@ function SignScript {
     $barnoldCert = (dir cert:LocalMachine\My\ -CodeSigningCert -DnsName "trenchie@trenchie.us")[0]    
     foreach ($arg in ($args + $input)) {                                                                                                  
         $startFolder = Get-Location                                                                                                   
-        $location = (Get-Item -Path $arg)                                                                                             
+        $location = (Get-Item -Path $arg)
         if ($location.Mode.StartsWith("d")) {  
-            Set-Location $location                                                                                                
+            Set-Location $location
             $childFiles = $location.GetFiles()                                                                                    
             SignScript @childFiles                                                                                                
             $childDirs = $location.GetDirectories()                                                                               
@@ -25,8 +25,11 @@ function SignScript {
     }                                                                                                                                     
 }     
 
-Set-ExecutionPolicy RemoteSigned -Scope LocalMachine -Force 2> $null
+//
 
-Copy-Item -Recurse -Force .\Profile\* -Destination $PROFILE.Replace($PROFILE.Substring($PROFILE.LastIndexOf('\')+1), '')
+Copy-Item -Recurse -Force .\Profile\* -Destination $PROFILE.Replace($PROFILE.Substring($PROFILE.LastIndexOf('/')+1), '')
 
-SignScript (ls $PROFILE).Directory
+if (($PSVersionTable.PSVersion).Major -lt 6) {
+  Set-ExecutionPolicy RemoteSigned -Scope LocalMachine -Force 2> $null
+  SignScript (ls $PROFILE).Directory
+}
