@@ -25,9 +25,15 @@ function SignScript {
     }                                                                                                                                     
 }     
 
-//
+#Copy Profile files.
+$ProfileDir = $PROFILE.Replace($PROFILE.Substring($PROFILE.LastIndexOf('/')+1), '')
+Copy-Item -Recurse -Force ".\Profile\*" -Destination $ProfileDir
 
-Copy-Item -Recurse -Force .\Profile\* -Destination $PROFILE.Replace($PROFILE.Substring($PROFILE.LastIndexOf('/')+1), '')
+#Copy Module files.
+$ModuleDir = $env:PSModulePath.Substring(0, $env:PSModulePath.IndexOf(":"))
+$ModuleDir = $ModuleDir.Replace($ModuleDir.Substring($ModuleDir.LastIndexOf('/')+1), '')
+Copy-Item -Recurse -Force ".\Modules" -Destination $ModuleDir
+
 
 if (($PSVersionTable.PSVersion).Major -lt 6) {
   Set-ExecutionPolicy RemoteSigned -Scope LocalMachine -Force 2> $null

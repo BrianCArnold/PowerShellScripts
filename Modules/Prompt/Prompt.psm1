@@ -59,10 +59,23 @@ function TrenchPrompt {
 	}
 
 	$sig = "$"
-	If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
-	{
+	If (($PSVersionTable.PSVersion).Major -lt 6) {
+		If ($IsWindows) {
+			If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
+			{
 
-		$sig = "#"
+				$sig = "#"
+			}
+
+		}
+	}
+	Else {
+		If ($IsLinux) {
+			$uid = id -u
+			if ($uid -eq '0') {
+				$sig = "#"
+			}
+		}
 	}
 	cout($sig)
 
