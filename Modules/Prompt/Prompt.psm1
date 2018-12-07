@@ -5,7 +5,7 @@ function colorBlack
 
 function colorBlue
 {
-  return "$([char]27)[0;34m" +  $args[0] + "$([char]27)[m"
+  return "$([char]27)[34m" +  $args[0] + "$([char]27)[m"
 }
 
 function colorGreen
@@ -138,9 +138,23 @@ function colorLightBrownInv
   return "$([char]27)[7;33m" +  $args[0] + "$([char]27)[m"
 }
 
+function underline
+{
+  return "$([char]27)[4m" +  $args[0] + "$([char]27)[m"	
+}
+
+function bold
+{
+  return "$([char]27)[1m" +  $args[0] + "$([char]27)[m"	
+}
+
 function TrenchPrompt {
 	$result=""
-	$result+=("PS" + ($PSVersionTable.PSVersion).Major.ToString() + " " + $(pwd)[0].Path + " ")
+	$location = $(pwd)[0].Path.ToString()
+	$result+=colorPurpleInv("PS" + ($PSVersionTable.PSVersion).Major.ToString())
+	$result+=colorBlack(" ")
+	$result+=colorBrown(underline($location)) + " "
+	$result+=colorBlack(" ")
 	$gStatus = $(git status -sb 2> $null)
 	if (($gStatus | measure).Count -eq 1) { $gStatus = @($gStatus) }
 	if ($gStatus -ne $null) {
@@ -167,7 +181,7 @@ function TrenchPrompt {
 		
 
 		$branch = $gStatus[0] -replace "## ([^.]+).*", '$1'
-		$result+=($branch)
+		$result+=bold(colorBlue(underline($branch)))
 		
 		$result+= "["
 		if ($TrackedMod -gt 0) { $result+=colorCyan($TrackedMod.ToString())}
