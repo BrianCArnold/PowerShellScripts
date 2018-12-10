@@ -140,20 +140,20 @@ function colorLightBrownInv
 
 function underline
 {
-  return "$([char]27)[4m" +  $args[0] + "$([char]27)[m"	
+  return "$([char]27)[4m" +  $args[0] + "$([char]27)[m"
 }
 
 function bold
 {
-  return "$([char]27)[1m" +  $args[0] + "$([char]27)[m"	
+  return "$([char]27)[1m" +  $args[0] + "$([char]27)[m"
 }
 
 function TrenchPrompt {
 	$result=""
 	$location = $(pwd)[0].Path.ToString()
-	$result+=colorPurpleInv("PS" + ($PSVersionTable.PSVersion).Major.ToString())
+	$result += colorLightGreen("PS" + ($PSVersionTable.PSVersion).Major.ToString())
 	$result+=colorBlack(" ")
-	$result+=colorBrown(underline($location)) + " "
+	$result+=colorBrown(($location)) + " "
 	$result+=colorBlack(" ")
 	$gStatus = $(git status -sb 2> $null)
 	if (($gStatus | measure).Count -eq 1) { $gStatus = @($gStatus) }
@@ -178,21 +178,21 @@ function TrenchPrompt {
 		$TrackedCop = ($files | Where-Object {$_[0] -eq 'C'}).Count # â†•
 		$TrackedUpd = ($files | Where-Object {$_[0] -eq 'U'}).Count # *
 
-		
+
 
 		$branch = $gStatus[0] -replace "## ([^.]+).*", '$1'
-		$result+=bold(colorBlue(underline($branch)))
-		
+		$result+=bold(colorBlue(($branch)))
+
 		$result+= "["
 		if ($TrackedMod -gt 0) { $result+=colorCyan($TrackedMod.ToString())}
-		if ($TrackedUpd -gt 0) { $result+=colorCyan($TrackedUpd.ToString())}	
+		if ($TrackedUpd -gt 0) { $result+=colorCyan($TrackedUpd.ToString())}
 		if ($unTrackedMod -gt 0) {$result+=colorCyanInv($unTrackedMod.ToString())}
 		if ($TrackedDel -gt 0) { $result+=colorRed($TrackedDel.ToString())}
 		if ($unTrackedDel -gt 0) {$result+=colorRedInv($unTrackedDel.ToString())}
 		if ($TrackedAdd -gt 0) { $result+=colorGreen($TrackedAdd.ToString())}
 		if ($unTrackedUnk -gt 0) {$result+=colorGreenInv($unTrackedUnk.ToString())}
 		if ($TrackedRen -gt 0) { $result+=colorPurple($TrackedRen.ToString())}
-		if ($TrackedCop -gt 0) { $result+=colorBlue($TrackedCop.ToString())}	
+		if ($TrackedCop -gt 0) { $result+=colorBlue($TrackedCop.ToString())}
 		if ($gStatus[0] -match "\[.*ahead ([0-9]+).*\]") {
 			if ($Matches[1] -ne $null) {
 				$result+=colorBrown($Matches[1])
@@ -217,14 +217,10 @@ function TrenchPrompt {
 	}
 
 	$sig = "$"
-	If (($PSVersionTable.PSVersion).Major -lt 6) {
-		If ($IsWindows) {
-			If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
-			{
-
-				$sig = "#"
-			}
-
+	If (($PSVersionTable.PSVersion).Major -lt 6 -or $IsWindows) {
+		If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
+		{
+			$sig = "#"
 		}
 	}
 	Else {
