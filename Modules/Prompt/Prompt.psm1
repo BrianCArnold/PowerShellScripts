@@ -79,6 +79,11 @@ function TrenchPrompt {
 
 		$result += "["
 		$TrackedUpd += $TrackedMod
+		if ($gStatus[0] -match "\[.*behind ([0-9]+).*\]") {
+			if ($Matches[1] -ne $null) {
+				$result += $((Color).Brown().Bold().Write([char]0x2193).ToString()) + $((Color).Brown().Write($Matches[1]))
+			}
+		}
 		if ($TrackedUpd -gt 0) { $result += (Color).Blue().Write($TrackedUpd.ToString())}
 		if ($unTrackedMod -gt 0) {$result += (Color).BlueB().Black().Write($unTrackedMod.ToString())}
 		if ($TrackedDel -gt 0) { $result += (Color).Red().Write($TrackedDel.ToString())}
@@ -90,11 +95,6 @@ function TrenchPrompt {
 		if ($gStatus[0] -match "\[.*ahead ([0-9]+).*\]") {
 			if ($Matches[1] -ne $null) {
 				$result += $((Color).BrownB().White().Bold().Write([char]0x2191).ToString()) + $((Color).BrownB().Black().Write($Matches[1]))
-			}
-		}
-		if ($gStatus[0] -match "\[.*behind ([0-9]+).*\]") {
-			if ($Matches[1] -ne $null) {
-				$result += $((Color).Brown().Bold().Write([char]0x2193).ToString()) + $((Color).Brown().Write($Matches[1]))
 			}
 		}
 		if ($result[$result.Length - 1] -eq "[") {
