@@ -93,6 +93,21 @@ class Style {
 		$result += "$([char]27)[m"
 		return $result
 	}
+	[String]WriteColor([UInt32]$fore, [UInt32]$back, [string]$val) {
+		$result = "$([char]27)["
+		$result += "48;2;"
+		$result += ($back -shr 16 -band 255).ToString() + ";"
+		$result += ($back -shr 8 -band 255).ToString() + ";"
+		$result += ($back -band 255).ToString() + ";"
+		$result += "38;2;"
+		$result += ($fore -shr 16 -band 255).ToString() + ";"
+		$result += ($fore -shr 8 -band 255).ToString() + ";"
+		$result += ($fore -band 255).ToString() + ""
+		$result += "m"
+		$result += $val
+		$result += "$([char]27)[m"
+		return $result
+	}
 }
 
 function Color() {

@@ -19,11 +19,17 @@ function TrenchPrompt {
 
 		$branch = $gStatus[0] -replace "## ([^.]+).*", '$1'
 		$repoUrl = $(git config --get remote.origin.url)
-		$repoName = $repoUrl.Substring($repoUrl.LastIndexOf('/') + 1)
+		if ($null -ne $repoUrl) {
+			$repoName = $repoUrl.Substring($repoUrl.LastIndexOf('/') + 1)
+		}
+		else {
+			$repoName = $gitLocation.Substring($gitLocation.LastIndexOf("/")+1)
+		}
 
-		$result += (Color).Bold().Green().Write($repoName)
-		$result += (Color).Bold().PurpleB().White().Write($branchIcon)
-		$result += (Color).PurpleB().Write($branch)
+		$result += (Color).BlueB().Black().Write($repoName)
+		#$result += (Color).BlueB().Black().Write($gitLocation)
+		$result += (Color).BlueB().White().Bold().Write($branchIcon)
+		$result += (Color).BlueB().Write($branch)
 
 		$ellipsis = ([char]0x2026).ToString()
 		$locParts = $repoLoc.Split('/')
@@ -33,7 +39,7 @@ function TrenchPrompt {
 			$newPart = $locParts[$i]
 			if ($i -lt ($locParts.Length - 1)) {
 				if ($newPart.Length -gt 5) {
-					$newPart = $newPart.Substring(0, 2) + $ellipsis + $newPart.Substring($newPart.Length-2, 2)
+					$newPart = $newPart.Substring(0, 4) + $ellipsis# + $newPart.Substring($newPart.Length-2, 2)
 				}
 			}
 			$newLoc = $newPart + '/' + $newLoc
@@ -52,8 +58,9 @@ function TrenchPrompt {
 		#if ($i -gt 0) {
 		#	$newLoc = '…' + '/' + $newLoc
 		#}
+		$result += " "
 
-		$result += (Color).Brown().Write($newLoc)
+		$result += (Color).GreenB().Black().Write($newLoc)
 
 		$files = $gStatus[1..($gStatus.Length - 1)]
 		# M odified
