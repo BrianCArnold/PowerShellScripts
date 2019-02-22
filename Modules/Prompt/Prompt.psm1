@@ -165,7 +165,7 @@ function TrenchPrompt {
 		}
 		if ($gStatus[0] -match "\[.*ahead ([0-9]+).*\]") {
 			if ($Matches[1] -ne $null) {
-				$statusData += (Color).WriteColor(0x887000, $endColor, [char]0x2193)
+				$statusData += (Color).WriteColor(0x887000, $endColor, [char]0x2191)
 				$statusData += (Color).WriteColor(0x883800, $endColor, $Matches[1])
 				$untrackedHit = $true
 			}
