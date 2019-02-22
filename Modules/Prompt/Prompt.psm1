@@ -82,14 +82,14 @@ function TrenchPrompt {
 		#if ($i -gt 0) {
 		#	$newLoc = '…' + '/' + $newLoc
 		#}
-		$result += (Color).WriteColor(0x402060, 0xbbffbb, $toIcon)
+		$result += (Color).WriteColor(0x402060, 0xddffdd, $toIcon)
 
 		$endColor = 0xddddff
 		if ($isAdmin) {
-			$endColor = 0xff8888
+			$endColor = 0xffdddd
 		}
 
-		$result += (Color).WriteGradient(0x302010, 0x301020, 0xbbffbb, $endColor, $newLoc)
+		$result += (Color).WriteGradient(0x302010, 0x301020, 0xddffdd, $endColor, $newLoc)
 
 
 		$files = $gStatus[1..($gStatus.Length - 1)]
