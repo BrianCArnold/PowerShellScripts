@@ -108,7 +108,35 @@ class Style {
 		$result += "$([char]27)[m"
 		return $result
 	}
+	[String]WriteGradient([UInt32]$foreStart, [UInt32]$foreEnd, [UInt32]$backStart, [UInt32]$backEnd, [string]$val) {
+		$foreRStart = ($foreStart -shr 16 -band 255)
+		$foreREnd = ($foreEnd -shr 16 -band 255)
+		$foreRDiff = ($foreREnd - $foreRStart) / $val.Length
+		$foreGStart = ($foreStart -shr 8 -band 255)
+		$foreGEnd = ($foreEnd -shr 8 -band 255)
+		$foreGDiff = ($foreGEnd - $foreGStart) / $val.Length
+		$foreBStart = ($foreStart -band 255)
+		$foreBEnd = ($foreEnd -band 255)
+		$foreBDiff = ($foreBEnd - $foreBStart) / $val.Length
+		$backRStart = ($backStart -shr 16 -band 255)
+		$backREnd = ($backEnd -shr 16 -band 255)
+		$backRDiff = ($backREnd - $backRStart) / $val.Length
+		$backGStart = ($backStart -shr 8 -band 255)
+		$backGEnd = ($backEnd -shr 8 -band 255)
+		$backGDiff = ($backGEnd - $backGStart) / $val.Length
+		$backBStart = ($backStart -band 255)
+		$backBEnd = ($backEnd -band 255)
+		$backBDiff = ($backBEnd - $backBStart) / $val.Length
+		$result = ""
+		for ($i = 0; $i -lt $val.Length; $i++) {
+			$newForeColor = (($foreRStart + ($foreRDiff * $i)) -shl 16) + (($foreGStart + ($foreGDiff * $i)) -shl 8) + (($foreBStart + ($foreBDiff * $i)))
+			$newBackColor = (($backRStart + ($backRDiff * $i)) -shl 16) + (($backGStart + ($backGDiff * $i)) -shl 8) + (($backBStart + ($backBDiff * $i)))
+			$result += $this.WriteColor($newForeColor, $newBackColor, $val.Substring($i, 1))
+		}
+		return $result
+	}
 }
+
 
 function Color() {
 	return [Style]::new()
