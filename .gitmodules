@@ -1,0 +1,3 @@
+[submodule "extern/posh-git"]
+	path = extern/posh-git
+	url = git@github.com:dahlbyk/posh-git.git

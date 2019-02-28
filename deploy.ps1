@@ -49,6 +49,7 @@ if ($IsWindows -or ($PSVersionTable.PSVersion).Major -lt 6) {
 	Copy-Item -Recurse -Force ".\Modules" -Destination $ModuleDir
 }
 
+.\extern\posh-git\install.ps1
 
 if (($PSVersionTable.PSVersion).Major -lt 6) {
 	Set-ExecutionPolicy RemoteSigned -Scope LocalMachine -Force 2> $null
