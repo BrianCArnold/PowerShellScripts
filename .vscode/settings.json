@@ -1,0 +1,14 @@
+{
+	"plsql-language.connections": [
+		{
+			"database": "DSUPPLY",
+			"password": "speedy_delivery",
+			"schema": "supply",
+			"username": "supply",
+			"active": true,
+			"ID": 2,
+			"name": "supply@DSUPPLY"
+		}
+	],
+	"plsql-language.connection.activeInfos": "supply/speedy_delivery@DSUPPLY"
+}

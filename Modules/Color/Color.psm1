@@ -94,6 +94,9 @@ class Style {
 		return $result
 	}
 	[String]WriteColor([UInt32]$fore, [UInt32]$back, [string]$val) {
+		if ($env:color -eq 'none') {
+			return $val
+		}
 		$result = "$([char]27)["
 		$result += "48;2;"
 		$result += ($back -shr 16 -band 255).ToString() + ";"

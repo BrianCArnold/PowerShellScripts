@@ -1,11 +1,26 @@
 
-function Get-Item-Recursively {
-	#	$myParams = $args
+function Get-ItemRecursively {
 	gci -R @args | Where-Object {$_.Mode[0] -ne 'd'} |  foreach { $_.FullName }
 }
-Set-Alias ffind Get-Item-Recursively
 
-function Get-Directory-Of {
+
+function Get-ItemRecursivelyOut {
+	param (
+		[parameter(position = 0)]
+		$dirName
+	)
+	$dirs = gci | Where-Object {$_.Mode[0] -eq 'd' -and $_.Name.ToLower() -eq $dirName.ToLower()}
+	foreach ($item in $dirs) {
+		return $item
+	}
+	$dirs = gci | Where-Object {$_.Mode[0] -eq 'd' -and $_.Name.ToLower() -ne $dirName.ToLower()}
+
+	foreach ($item in $dirs) {
+		return $item
+	}
+}; Get-ItemRecursivelyOut ProductSupply
+
+function Get-DirectoryOf {
 	$location = Get-Item @args
 	if ($location.Mode.StartsWith("d")) {
 		Write-Output -InputObject $location
@@ -15,19 +30,21 @@ function Get-Directory-Of {
 	}
 
 }
-Set-Alias dirof Get-Directory-Of
 
-function Set-Location-Trench {
-	if ($args.Count -eq 0) {
-		$mArgs = '~'
+function Set-LocationTrench {
+	param (
+		[parameter(position = 0)]
+		$location
+	)
+	if (!$location) {
+		Pop-Location
 	}
 	else {
-		$mArgs = $args
+		Push-Location $location
 	}
-	$location = Get-Directory-Of @mArgs
-	Set-Location $location
 }
-Set-Alias j Set-Location-Trench
-Export-ModuleMember -Function Set-Location-Trench, Get-Directory-Of, Get-Item-Recursively
-Export-ModuleMember -Alias ffind, dirof, j
-
+Set-Alias ffind Get-ItemRecursively
+Set-Alias fffind Get-ItemRecursivelyOut
+Set-Alias dirof Get-DirectoryOf
+Set-Alias j Set-LocationTrench
+Export-ModuleMember -Function Set-LocationTrench, Get-DirectoryOf, Get-ItemRecursively, Get-ItemRecursivelyOut -Alias ffind, fffind, dirof, j
