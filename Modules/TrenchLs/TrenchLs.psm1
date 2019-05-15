@@ -6,7 +6,7 @@ function Get-ItemRecursively {
 
 function Get-ItemRecursivelyOut {
 	param (
-		[parameter(position = 0)]
+		[parameter(Position = 0)]
 		$dirName
 	)
 	$dirs = gci | Where-Object {$_.Mode[0] -eq 'd' -and $_.Name.ToLower() -eq $dirName.ToLower()}
@@ -33,7 +33,7 @@ function Get-DirectoryOf {
 
 function Set-LocationTrench {
 	param (
-		[parameter(position = 0)]
+		[parameter(Position = 0)]
 		$location
 	)
 	if (!$location) {
@@ -43,8 +43,39 @@ function Set-LocationTrench {
 		Push-Location $location
 	}
 }
+
+function Stop-ProcessTree {
+	param(
+		[Int32]
+		$Id
+	)
+	Get-Process | Where-Object { $_.Parent.Id -eq $Id } | ForEach-Object { Stop-ProcessTree -Id $_.Id -Force }
+	Stop-Process -Id $Id -Force
+}
+
+function Watch-Process {
+	param (
+		[Parameter(Position = 0)]
+		[string]
+		$Command,
+		[Parameter(Position = 1)]
+		[string]
+		$Arguments,
+		[Parameter(Position = 2)]
+		[string]
+		$WorkingDirectory
+	)
+	[console]::TreatControlCAsInput = $true
+	Do {
+		$relevantProc = Start-Process -FilePath $Command -ArgumentList $Arguments -WorkingDirectory $WorkingDirectory -NoNewWindow -PassThru
+		Read-Host "Press enter to quit"
+		Stop-ProcessTree $relevantProc.Id
+	}
+	While ((Read-Host -Prompt "Continue? [Y/n]").ToLower() -ne 'n')
+}
+
 Set-Alias ffind Get-ItemRecursively
 Set-Alias fffind Get-ItemRecursivelyOut
 Set-Alias dirof Get-DirectoryOf
 Set-Alias j Set-LocationTrench
-Export-ModuleMember -Function Set-LocationTrench, Get-DirectoryOf, Get-ItemRecursively, Get-ItemRecursivelyOut -Alias ffind, fffind, dirof, j
+Export-ModuleMember -Function Watch-Process, Set-LocationTrench, Get-DirectoryOf, Get-ItemRecursively, Get-ItemRecursivelyOut -Alias ffind, fffind, dirof, j
