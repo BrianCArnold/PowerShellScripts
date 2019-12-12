@@ -65,13 +65,21 @@ function Watch-Process {
 		[string]
 		$WorkingDirectory
 	)
-	[console]::TreatControlCAsInput = $true
-	Do {
-		$relevantProc = Start-Process -FilePath $Command -ArgumentList $Arguments -WorkingDirectory $WorkingDirectory -NoNewWindow -PassThru
-		Read-Host "Press enter to quit"
-		Stop-ProcessTree $relevantProc.Id
+	try {
+		[console]::TreatControlCAsInput = $true
+		Do {
+			$relevantProc = Start-Process -FilePath $Command -ArgumentList $Arguments -WorkingDirectory $WorkingDirectory -NoNewWindow -PassThru
+			Read-Host "Press enter to quit"
+			Stop-ProcessTree $relevantProc.Id
+		}
+		While ((Read-Host -Prompt "Continue? [Y/n]").ToLower() -ne 'n')
 	}
-	While ((Read-Host -Prompt "Continue? [Y/n]").ToLower() -ne 'n')
+	catch [System.Exception] {
+		Write-Error -Message "Command: $($command)"
+		Write-Error -Message "Arguments: $($Arguments)"
+		Write-Error -Message "WorkingDirectory: $($WorkingDirectory)"
+		Throw;
+	}
 }
 
 Set-Alias ffind Get-ItemRecursively
