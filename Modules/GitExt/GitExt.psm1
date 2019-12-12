@@ -48,7 +48,11 @@ function Start-PullRequest {
 
   }
   if ((git remote -v | where { $_ -match 'push' }).Contains('github.com')) {
-    Write-Host('Github not supported.')
+		$parts = (git remote -v | where { $_ -match 'push' }).Replace(" (push)", "").Split(@(':','/'), [StringSplitOptions]::RemoveEmptyEntries).Reverse()
+		$repo = $parts[0]
+		$owner = $parts[1]
+		$branch = (git rev-parse --abbrev-ref HEAD)
+		& "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" ("https://github.com/" + $owner + "/" + $repo + "/pull/new/" + $branch + "?expand=1")
   }
 }
 
