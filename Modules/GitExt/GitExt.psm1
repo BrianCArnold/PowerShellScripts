@@ -48,9 +48,11 @@ function Start-PullRequest {
 
   }
   if ((git remote -v | where { $_ -match 'push' }).Contains('github.com')) {
-		$parts = (git remote -v | where { $_ -match 'push' }).Replace(" (push)", "").Split(@(':','/'), [StringSplitOptions]::RemoveEmptyEntries).Reverse()
-		$repo = $parts[0]
-		$owner = $parts[1]
+		$rem = (git remote -v | where { $_ -match 'push' }).Replace(" (push)", "")
+		$rem = $rem.Substring($rem.IndexOf("github.com") + "github.com".Length + 1)
+		$parts = $rem.Split('/')
+		$owner = $parts[0]
+		$repo = $parts[1].Replace('.git', '')
 		$branch = (git rev-parse --abbrev-ref HEAD)
 		& "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" ("https://github.com/" + $owner + "/" + $repo + "/pull/new/" + $branch + "?expand=1")
   }
