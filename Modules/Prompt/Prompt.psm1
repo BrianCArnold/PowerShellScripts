@@ -45,7 +45,7 @@ function TrenchPrompt {
 		$branch = $gStatus[0] -replace "## ([^.]+).*", '$1'
 		$repoUrl = $(git config --get remote.origin.url)
 		if ($null -ne $repoUrl) {
-			$repoName = $repoUrl.Substring($repoUrl.LastIndexOf('/') + 1)
+			$repoName = $repoUrl.Substring($repoUrl.LastIndexOf('/') + 1).Replace(".git", "")
 		}
 		else {
 			$repoName = $gitLocation.Substring($gitLocation.LastIndexOf("/")+1)
