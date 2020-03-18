@@ -29,11 +29,24 @@ function Start-NewGitBranch {
 		[parameter(Position = 0)]
 		$branchName
 	)
+	Write-Host "Checking for existing branch..."
 	$branches = (git branch -l).Split('`n') | % { $_.Substring(2) }
 	if (!$branches.Contains($branchName)) {
-		git branch $branchName
+		git branch $branchName 2> $errMsg 1> $stdMsg
 	}
-
+	$worktrees = (git worktree list --porcelain).Split('`n')
+	For ($i=0; $i -lt $worktrees.Length; $i+=4) {
+		If ($worktrees[$i+2].StartsWith("branch")) { #Here's a branch that has it's own worktree.
+			$branchData = $worktrees[$i+2]
+			$thisBranchName = $branchData.Replace("branch refs/heads/", "")
+			if ($branchName -eq $thisBranchName) { #Huzzah! We found the branch, it's already checked out in another worktree.
+				$worktreeLoc = $worktrees[$i].Replace("worktree ", "")
+				Write-Host $branchName" already checked out at "$worktreeLoc", jumping there. (use 'j' to undo)"
+				Set-LocationTrench $worktreeLoc
+				return
+			}
+		}
+	}
 	git checkout $branchName
 }
 
