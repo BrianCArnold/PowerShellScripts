@@ -112,6 +112,10 @@ class Style {
 		return $result
 	}
 	[String]WriteGradient([UInt32]$foreStart, [UInt32]$foreEnd, [UInt32]$backStart, [UInt32]$backEnd, [string]$val) {
+		if ($val.Length -eq 0 )
+		{
+			return "";
+		}
 		$foreRStart = ($foreStart -shr 16 -band 255)
 		$foreREnd = ($foreEnd -shr 16 -band 255)
 		$foreRDiff = ($foreREnd - $foreRStart) / $val.Length
