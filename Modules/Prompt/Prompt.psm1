@@ -41,8 +41,8 @@ function TrenchPrompt {
 			$result += (Color).WriteColor(0x802020, 0x0, $toIcon)
 		}
 		elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-			$result = (Color).RedB().White().Write($simplePrompt)
-			$result += (Color).BlackB().Red().Write($toIcon)			
+			$result = (Color).Red().BlackB().Underline().Write($simplePrompt)
+			$result += (Color).Red().BlackB().Write($toBlankIcon)			
 		}
 		else  {#None
 			$result += ($simplePrompt)
@@ -55,8 +55,8 @@ function TrenchPrompt {
 			$result += (Color).WriteColor(0x406020, 0x0, $toIcon)
 		}
 		elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-			$result = (Color).GreenB().White().Bold().Write($simplePrompt)
-			$result += (Color).BlackB().White().Write($toIcon)			
+			$result = (Color).Green().BlackB().Underline().Write($simplePrompt)
+			$result += (Color).Green().BlackB().Write($toBlankIcon)			
 		}
 		else  {#None
 			$result += ($simplePrompt)
@@ -85,9 +85,9 @@ function TrenchPrompt {
 			$result += (Color).WriteGradient(0xffeedd, 0xeeddff, 0x608040, 0x402060, $branch)
 		}
 		elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-			$result += (Color).White().RedB().Write($repoName)
-			$result += (Color).Black().RedB().Write($branchIcon)
-			$result += (Color).White().RedB().Write($branch)
+			$result += (Color).Green().BlackB().Write($repoName)
+			$result += (Color).White().BlackB().Write($branchIcon)
+			$result += (Color).Cyan().BlackB().Underline().Write($branch)
 		}
 		else  {#None
 			$result += ($repoName)
@@ -127,7 +127,7 @@ function TrenchPrompt {
 			$result += (Color).WriteColor(0x402060, 0xddffdd, $toIcon)
 		}
 		elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-			$result += (Color).White().BlackB().Write($toIcon)
+			$result += (Color).Black().GreenB().Write($toIcon)
 		}
 		else  {#None
 			$result += ($toIcon)
@@ -143,7 +143,7 @@ function TrenchPrompt {
 			$result += (Color).WriteGradient(0x302010, 0x301020, 0xddffdd, $endColor, $newLoc)
 		}
 		elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-			$result += (Color).Blue().BlackB().Write($newLoc)
+			$result += (Color).Black().GreenB().Write($newLoc)
 		}
 		else  {#None
 			$result += ($newLoc)
@@ -183,8 +183,8 @@ function TrenchPrompt {
 					$statusData += (Color).WriteColor(0xFF8C22, 0x0, $Matches[1])
 				}
 				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-					$statusData += (Color).Brown().Bold().BlackB().Write([char]0x2193)
-					$statusData += (Color).Brown().Bold().BlackB().Write($Matches[1])
+					$statusData += (Color).Red().Bold().BlackB().Write([char]0x2193)
+					$statusData += (Color).Red().Bold().BlackB().Write($Matches[1])
 				}
 				else  {#None
 					$statusData += ([char]0x2193)
@@ -306,8 +306,8 @@ function TrenchPrompt {
 					$statusData += (Color).WriteColor(0x883800, $endColor, $Matches[1])
 				}
 				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-					$statusData += (Color).Brown().WhiteB().Write([char]0x2191)
-					$statusData += (Color).Brown().WhiteB().Write($Matches[1])
+					$statusData += (Color).Red().Bold().WhiteB().Write([char]0x2191)
+					$statusData += (Color).Red().Bold().WhiteB().Write($Matches[1])
 				}
 				else  {#None
 					$statusData += ([char]0x2191)
@@ -323,7 +323,7 @@ function TrenchPrompt {
 					$result += (Color).WriteGradient(0x0, 0x0, $endColor, $endColor, $fromIcon)
 				}
 				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-					$result += (Color).Cyan().BlackB().Write($fromBlankIcon)
+					$result += (Color).Black().GreenB().Write($fromIcon)
 				}
 				else  {#None
 					$result += ($fromIcon)
@@ -335,7 +335,7 @@ function TrenchPrompt {
 					$result += (Color).WriteGradient(0x0, 0x0, $endColor, $endColor, $fromBlankIcon)
 				}
 				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-					$result += (Color).Cyan().BlackB().Write($fromIcon)
+					$result += (Color).White().GreenB().Write($fromIcon)
 				}
 				else  {#None
 					$result += ($fromBlankIcon)
@@ -348,7 +348,7 @@ function TrenchPrompt {
 					$result += (Color).WriteGradient($endColor, $endColor, 0x0, 0x0, $toIcon)
 				}
 				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-					$result += (Color).Cyan().BlackB().Write($toIcon)
+					$result += (Color).White().BlackB().Write($toIcon)
 				}
 				else  {#None
 					$result += ($toIcon)
@@ -359,7 +359,7 @@ function TrenchPrompt {
 					$result += (Color).WriteGradient($endColor, $endColor, 0x0, 0x0, $toBlankIcon)
 				}
 				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-					$result += (Color).Cyan().BlackB().Write($toBlankIcon)
+					$result += (Color).White().BlackB().Write($toBlankIcon)
 				}
 				else  {#None
 					$result += ($toBlankIcon)
@@ -371,7 +371,7 @@ function TrenchPrompt {
 				$result += (Color).WriteGradient($endColor, $endColor, 0x0, 0x0, $toIcon)
 			}
 			elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
-				$result += (Color).Cyan().BlackB().Write($toIcon)
+				$result += (Color).Green().BlackB().Write($toIcon)
 			}
 			else  {#None
 				$result += ($toIcon)
