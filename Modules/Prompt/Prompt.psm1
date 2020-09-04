@@ -7,6 +7,15 @@ $fromIcon = ([char]0xE0B2).ToString()
 $fromBlankIcon = ([char]0xE0B3).ToString()
 
 function TrenchPrompt {
+	if ($ENV:TRENCHCOLOR -eq 2) {#Full
+		
+	}
+	elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+		
+	}
+	else  {#None
+
+	}
 	$isAdmin = $false
 	if (($PSVersionTable.PSVersion).Major -lt 6 -or $IsWindows) {
 		If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -23,16 +32,36 @@ function TrenchPrompt {
 	}
 	$result=""
 	$location = $(Get-Location)[0].Path.ToString().Replace("\", "/")
-
+	
 	$simplePrompt = "PS" + ($PSVersionTable.PSVersion).Major.ToString() + " " + $location
 
 	if ($isAdmin -eq $true) {
-		$result = (Color).WriteGradient(0xddffee, 0xffeedd, 0x406020, 0x802020, $simplePrompt)
-		$result += (Color).WriteColor(0x802020, 0x0, $toIcon)
+		if ($ENV:TRENCHCOLOR -eq 2) {#Full
+			$result = (Color).WriteGradient(0xddffee, 0xffeedd, 0x406020, 0x802020, $simplePrompt)
+			$result += (Color).WriteColor(0x802020, 0x0, $toIcon)
+		}
+		elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+			$result = (Color).RedB().White().Write($simplePrompt)
+			$result += (Color).BlackB().Red().Write($toIcon)			
+		}
+		else  {#None
+			$result += ($simplePrompt)
+			$result += ($toIcon)
+		}
 	}
  	else {
-		$result = (Color).WriteGradient(0xddffee, 0xffeedd, 0x204060, 0x406020, $simplePrompt)
-		$result += (Color).WriteColor(0x406020, 0x0, $toIcon)
+		if ($ENV:TRENCHCOLOR -eq 2) {#Full
+			$result = (Color).WriteGradient(0xddffee, 0xffeedd, 0x204060, 0x406020, $simplePrompt)
+			$result += (Color).WriteColor(0x406020, 0x0, $toIcon)
+		}
+		elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+			$result = (Color).GreenB().White().Bold().Write($simplePrompt)
+			$result += (Color).BlackB().White().Write($toIcon)			
+		}
+		else  {#None
+			$result += ($simplePrompt)
+			$result += ($toIcon)
+		}
 	}
 	$gStatus = $(git status -sb 2> $null)
 	if (($gStatus | Measure-Object).Count -eq 1) { $gStatus = @($gStatus) }
@@ -50,10 +79,21 @@ function TrenchPrompt {
 		else {
 			$repoName = $gitLocation.Substring($gitLocation.LastIndexOf("/")+1)
 		}
-
-		$result += (Color).WriteGradient(0xddffee, 0xffeedd, 0x602040, 0x608040, $repoName)
-		$result += (Color).WriteGradient(0x000000, 0x000000, 0x608040, 0x608040, $branchIcon)
-		$result += (Color).WriteGradient(0xffeedd, 0xeeddff, 0x608040, 0x402060, $branch)
+		if ($ENV:TRENCHCOLOR -eq 2) {#Full
+			$result += (Color).WriteGradient(0xddffee, 0xffeedd, 0x602040, 0x608040, $repoName)
+			$result += (Color).WriteGradient(0x000000, 0x000000, 0x608040, 0x608040, $branchIcon)
+			$result += (Color).WriteGradient(0xffeedd, 0xeeddff, 0x608040, 0x402060, $branch)
+		}
+		elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+			$result += (Color).White().RedB().Write($repoName)
+			$result += (Color).Black().RedB().Write($branchIcon)
+			$result += (Color).White().RedB().Write($branch)
+		}
+		else  {#None
+			$result += ($repoName)
+			$result += ($branchIcon)
+			$result += ($branch)
+		}
 
 		$ellipsis = ([char]0x2026).ToString()
 		$locParts = $repoLoc.Split('/')
@@ -82,14 +122,32 @@ function TrenchPrompt {
 		#if ($i -gt 0) {
 		#	$newLoc = '…' + '/' + $newLoc
 		#}
-		$result += (Color).WriteColor(0x402060, 0xddffdd, $toIcon)
+		
+		if ($ENV:TRENCHCOLOR -eq 2) {#Full
+			$result += (Color).WriteColor(0x402060, 0xddffdd, $toIcon)
+		}
+		elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+			$result += (Color).White().BlackB().Write($toIcon)
+		}
+		else  {#None
+			$result += ($toIcon)
+		}
 
 		$endColor = 0xddddff
 		if ($isAdmin) {
 			$endColor = 0xffdddd
 		}
 
-		$result += (Color).WriteGradient(0x302010, 0x301020, 0xddffdd, $endColor, $newLoc)
+		
+		if ($ENV:TRENCHCOLOR -eq 2) {#Full
+			$result += (Color).WriteGradient(0x302010, 0x301020, 0xddffdd, $endColor, $newLoc)
+		}
+		elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+			$result += (Color).Blue().BlackB().Write($newLoc)
+		}
+		else  {#None
+			$result += ($newLoc)
+		}
 
 
 		$files = $gStatus[1..($gStatus.Length - 1)]
@@ -118,76 +176,206 @@ function TrenchPrompt {
 		$untrackedHit = $false
 		if ($gStatus[0] -match "\[.*behind ([0-9]+).*\]") {
 			if ($Matches[1] -ne $null) {
-				$statusData += (Color).WriteColor(0xFFD722, 0x0, [char]0x2193)
-				$statusData += (Color).WriteColor(0xFF8C22, 0x0, $Matches[1])
+				#Behind/To Pull
+				#Orange/Black
+				if ($ENV:TRENCHCOLOR -eq 2) {#Full
+					$statusData += (Color).WriteColor(0xFFD722, 0x0, [char]0x2193)
+					$statusData += (Color).WriteColor(0xFF8C22, 0x0, $Matches[1])
+				}
+				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+					$statusData += (Color).Brown().Bold().BlackB().Write([char]0x2193)
+					$statusData += (Color).Brown().Bold().BlackB().Write($Matches[1])
+				}
+				else  {#None
+					$statusData += ([char]0x2193)
+					$statusData += ($Matches[1])
+				}
 				$trackedHit = $true
 			}
 		}
 		if ($TrackedUpd -gt 0)
-		{
-			$statusData += (Color).WriteColor(0x2040b0, 0x0, $TrackedUpd.ToString())
+		{#Blue/Black
+			if ($ENV:TRENCHCOLOR -eq 2) {#Full
+				$statusData += (Color).WriteColor(0x2040b0, 0x0, $TrackedUpd.ToString())
+			}
+			elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+				$statusData += (Color).Blue().BlackB().Write($TrackedUpd.ToString())
+			}
+			else  {#None
+				$statusData += ($TrackedUpd.ToString())
+			}
 			$trackedHit = $true
 		}
 		if ($TrackedDel -gt 0)
-		{
-			$statusData += (Color).WriteColor(0xb02040, 0x0, $TrackedDel.ToString())
+		{#Red/Black
+			if ($ENV:TRENCHCOLOR -eq 2) {#Full
+				$statusData += (Color).WriteColor(0xb02040, 0x0, $TrackedDel.ToString())
+			}
+			elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+				$statusData += (Color).Red().BlackB().Write($TrackedDel.ToString())
+			}
+			else  {#None
+				$statusData += ($TrackedDel.ToString())
+			}
 			$trackedHit = $true
 		}
 		if ($TrackedAdd -gt 0)
-		{
-			$statusData += (Color).WriteColor(0x20b020, 0x0, $TrackedAdd.ToString())
+		{#green/black
+			if ($ENV:TRENCHCOLOR -eq 2) {#Full
+				$statusData += (Color).WriteColor(0x20b020, 0x0, $TrackedAdd.ToString())
+			}
+			elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+				$statusData += (Color).Green().BlackB().Write($TrackedAdd.ToString())
+			}
+			else  {#None
+				$statusData += ($TrackedAdd.ToString())
+			}
 			$trackedHit = $true
 		}
 		if ($TrackedRen -gt 0)
-		{
-			$statusData += (Color).WriteColor(0xDA70D6, 0x0, $TrackedRen.ToString())
+		{#purple/black
+			if ($ENV:TRENCHCOLOR -eq 2) {#Full
+				$statusData += (Color).WriteColor(0xDA70D6, 0x0, $TrackedRen.ToString())
+			}
+			elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+				$statusData += (Color).Purple().BlackB().Write($TrackedRen.ToString())
+			}
+			else  {#None
+				$statusData += ($TrackedRen.ToString())
+			}
 			$trackedHit = $true
 		}
 		if ($TrackedCop -gt 0)
-		{
-			$statusData += (Color).WriteColor(0x66b9b9, 0x0, $TrackedCop.ToString())
+		{#cyan/black
+			if ($ENV:TRENCHCOLOR -eq 2) {#Full
+				$statusData += (Color).WriteColor(0x66b9b9, 0x0, $TrackedCop.ToString())
+			}
+			elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+				$statusData += (Color).Cyan().BlackB().Write($TrackedCop.ToString())
+			}
+			else  {#None
+				$statusData += ($TrackedCop.ToString())
+			}
 			$trackedHit = $true
 		}
 		if ($unTrackedUnk -gt 0)
-		{
-			$statusData += (Color).WriteColor(0x209020, $endColor, $unTrackedUnk.ToString())
+		{#Green/white
+			if ($ENV:TRENCHCOLOR -eq 2) {#Full
+				$statusData += (Color).WriteColor(0x209020, 0x0, $unTrackedUnk.ToString())
+			}
+			elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+				$statusData += (Color).Green().WhiteB().Write($unTrackedUnk.ToString())
+			}
+			else  {#None
+				$statusData += ($unTrackedUnk.ToString())
+			}
 			$untrackedHit = $true
 		}
 		if ($unTrackedDel -gt 0)
-		{
-			$statusData += (Color).WriteColor(0x902020, $endColor, $unTrackedDel.ToString())
+		{#red/white
+			if ($ENV:TRENCHCOLOR -eq 2) {#Full
+				$statusData += (Color).WriteColor(0x209020, 0x0, $unTrackedDel.ToString())
+			}
+			elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+				$statusData += (Color).Red().WhiteB().Write($unTrackedDel.ToString())
+			}
+			else  {#None
+				$statusData += ($unTrackedDel.ToString())
+			}
 			$untrackedHit = $true
 		}
 		if ($unTrackedMod -gt 0)
-		{
-			$statusData += (Color).WriteColor(0x202090, $endColor, $unTrackedMod.ToString())
+		{#blue/white
+			if ($ENV:TRENCHCOLOR -eq 2) {#Full
+				$statusData += (Color).WriteColor(0x202090, 0x0, $unTrackedMod.ToString())
+			}
+			elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+				$statusData += (Color).Blue().WhiteB().Write($unTrackedMod.ToString())
+			}
+			else  {#None
+				$statusData += ($unTrackedMod.ToString())
+			}
 			$untrackedHit = $true
 		}
 		if ($gStatus[0] -match "\[.*ahead ([0-9]+).*\]") {
 			if ($Matches[1] -ne $null) {
-				$statusData += (Color).WriteColor(0x887000, $endColor, [char]0x2191)
-				$statusData += (Color).WriteColor(0x883800, $endColor, $Matches[1])
+				#Ahead/To Push
+				#Orange/White
+				if ($ENV:TRENCHCOLOR -eq 2) {#Full
+					$statusData += (Color).WriteColor(0x887000, $endColor, [char]0x2191)
+					$statusData += (Color).WriteColor(0x883800, $endColor, $Matches[1])
+				}
+				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+					$statusData += (Color).Brown().WhiteB().Write([char]0x2191)
+					$statusData += (Color).Brown().WhiteB().Write($Matches[1])
+				}
+				else  {#None
+					$statusData += ([char]0x2191)
+					$statusData += ($Matches[1])
+				}
 				$untrackedHit = $true
 			}
 		}
 		if ($statusData.Length -gt 0) {
 			if ($trackedHit -eq $true) {
-				$result += (Color).WriteGradient(0x0, 0x0, $endColor, $endColor, $fromIcon)
+				
+				if ($ENV:TRENCHCOLOR -eq 2) {#Full
+					$result += (Color).WriteGradient(0x0, 0x0, $endColor, $endColor, $fromIcon)
+				}
+				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+					$result += (Color).Cyan().BlackB().Write($fromBlankIcon)
+				}
+				else  {#None
+					$result += ($fromIcon)
+				}
 			}
 			elseif ($untrackedHit -eq $true) {
-				$result += (Color).WriteGradient(0x0, 0x0, $endColor, $endColor, $fromBlankIcon)
+				
+				if ($ENV:TRENCHCOLOR -eq 2) {#Full
+					$result += (Color).WriteGradient(0x0, 0x0, $endColor, $endColor, $fromBlankIcon)
+				}
+				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+					$result += (Color).Cyan().BlackB().Write($fromIcon)
+				}
+				else  {#None
+					$result += ($fromBlankIcon)
+				}
 			}
 
 			$result += $statusData
 			if ($untrackedHit -eq $true) {
-				$result += (Color).WriteGradient($endColor, $endColor, 0x0, 0x0, $toIcon)
+				if ($ENV:TRENCHCOLOR -eq 2) {#Full
+					$result += (Color).WriteGradient($endColor, $endColor, 0x0, 0x0, $toIcon)
+				}
+				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+					$result += (Color).Cyan().BlackB().Write($toIcon)
+				}
+				else  {#None
+					$result += ($toIcon)
+				}
 			}
 			elseif ($trackedHit -eq $true) {
-				$result += (Color).WriteGradient($endColor, 0xddddff, 0x0, 0x0, $toBlankIcon)
+				if ($ENV:TRENCHCOLOR -eq 2) {#Full
+					$result += (Color).WriteGradient($endColor, $endColor, 0x0, 0x0, $toBlankIcon)
+				}
+				elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+					$result += (Color).Cyan().BlackB().Write($toBlankIcon)
+				}
+				else  {#None
+					$result += ($toBlankIcon)
+				}
 			}
 		}
 		else {
-			$result += (Color).WriteGradient($endColor, $endColor, 0x0, 0x0, $toIcon)
+			if ($ENV:TRENCHCOLOR -eq 2) {#Full
+				$result += (Color).WriteGradient($endColor, $endColor, 0x0, 0x0, $toIcon)
+			}
+			elseif ($ENV:TRENCHCOLOR -eq 1) {#Simple
+				$result += (Color).Cyan().BlackB().Write($toIcon)
+			}
+			else  {#None
+				$result += ($toIcon)
+			}
 		}
 
 
